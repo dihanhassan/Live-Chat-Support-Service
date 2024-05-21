@@ -1,0 +1,6 @@
+@LiveSupport.AI_HostAddress = http://localhost:5221
+
+GET {{LiveSupport.AI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

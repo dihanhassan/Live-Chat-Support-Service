@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "lz7K0iNx3PLBH1636FW8Sxja1UH2cZJlWOQo6Rb/OECEyDetrF9pDOdARp1iZTBVjKRpQf92s66E13QL3vMA9Q==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\TN-99347\\Desktop\\Live-Chat-Support\\LiveSupport.AI\\LiveSupport.AI\\LiveSupport.AI.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\TN-99347\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
+    "C:\\Users\\TN-99347\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",
+    "C:\\Users\\TN-99347\\.nuget\\packages\\swashbuckle.aspnetcore\\6.4.0\\swashbuckle.aspnetcore.6.4.0.nupkg.sha512",
+    "C:\\Users\\TN-99347\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.4.0\\swashbuckle.aspnetcore.swagger.6.4.0.nupkg.sha512",
+    "C:\\Users\\TN-99347\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.4.0\\swashbuckle.aspnetcore.swaggergen.6.4.0.nupkg.sha512",
+    "C:\\Users\\TN-99347\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.4.0\\swashbuckle.aspnetcore.swaggerui.6.4.0.nupkg.sha512"
+  ],
+  "logs": []
+}
