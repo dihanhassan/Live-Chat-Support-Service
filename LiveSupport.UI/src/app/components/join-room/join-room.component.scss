@@ -1,22 +1,88 @@
+.container {
+  max-width: 1170px;
+  margin: auto;
+  background-color: #fff; /* White background */
+  color: #333; /* Dark gray text */
+  background-image: none; /* Removing the previous background image */
+  padding: 20px; /* Adding padding for space */
+  box-sizing: border-box; /* Ensuring padding is included in the max-width */
+}
+
+.chat_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 70px;
+  background-color: #000; /* Black */
+}
+
 .btn-color {
-    background-color: #0e1c36;
-    color: #fff;
-  
-  }
-  
-  .profile-image-pic {
-    height: 200px;
-    width: 200px;
-    object-fit: cover;
-  }
-  
-  
-  
-  .cardbody-color {
-    background-color: #52ACFF;
-    background-image: linear-gradient(180deg, #52ACFF 25%, #FFE32C 100%);
-  }
-  
-  a {
-    text-decoration: none;
-  }
+  background-color: #000; /* Black */
+  color: #fff;
+}
+
+.profile-image-pic {
+  height: 200px;
+  width: 200px;
+  object-fit: cover;
+}
+
+.cardbody-color {
+  background-color: #fff; /* White */
+  background-image: linear-gradient(180deg, #fff 25%, #f0f0f0 100%); /* Gradient from white to light gray */
+}
+
+a {
+  text-decoration: none;
+  color: #007bff; /* Blue for links */
+}
+
+.srch_bar input {
+  border: 1px solid #ccc; /* Light gray border */
+  color: #000; /* Black text */
+}
+
+.srch_bar .input-group-addon button {
+  color: #000; /* Black */
+}
+
+.chat_ib h5 {
+  color: #fff; /* White */
+}
+
+.chat_ib p {
+  color: #ccc; /* Light gray */
+}
+
+.incoming_msg_img img {
+  border-radius: 50%; /* Making the image round for a modern look */
+}
+
+.received_withd_msg p {
+  background: #f0f0f0; /* Light gray for received messages */
+  color: #000; /* Black text */
+}
+
+.sent_msg p {
+  background: #007bff; /* Blue for sent messages */
+  color: #fff; /* White text */
+}
+
+.input_msg_write input {
+  background: #000; /* Black background */
+  color: #fff; /* White text */
+  border: 1px solid #ccc; /* Light gray border */
+}
+
+.write_msg::placeholder {
+  color: #ccc; /* Light gray for placeholder text */
+}
+
+.msg_send_btn {
+  background: #007bff; /* Blue */
+  color: #fff; /* White */
+}
+
+a:hover {
+  color: #0056b3; /* Darker blue for link hover */
+}

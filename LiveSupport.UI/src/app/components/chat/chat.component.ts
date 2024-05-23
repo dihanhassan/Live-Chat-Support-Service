@@ -14,6 +14,10 @@ export class ChatComponent implements OnInit ,AfterViewChecked{
   router = inject(Router);
   loggedInUserName = sessionStorage.getItem("user");
   roomName = sessionStorage.getItem("room");
+  /**
+   *
+   */
+ 
 
   @ViewChild('scrollMe') private scrollContainer!: ElementRef;
  
