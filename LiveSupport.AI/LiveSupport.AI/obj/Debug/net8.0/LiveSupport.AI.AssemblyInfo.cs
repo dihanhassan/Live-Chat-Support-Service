@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LiveSupport.AI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b7635429d865510a422f4d0ac1b3936c69e0d945")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7bf05c17b29d3b2814e367b1477e9c13f949edd5")]
 [assembly: System.Reflection.AssemblyProductAttribute("LiveSupport.AI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LiveSupport.AI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

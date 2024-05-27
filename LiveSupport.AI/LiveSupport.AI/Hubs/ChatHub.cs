@@ -19,8 +19,7 @@ namespace LiveSupport.AI.Hubs
         public async Task JoinRoom(UserConnection userConnection)
         {
 
-
-
+           
             await Groups.AddToGroupAsync(Context.ConnectionId, userConnection.Room);
             _connections[Context.ConnectionId] = userConnection;
             if (!userConnection.IsAdmin)
@@ -55,7 +54,7 @@ namespace LiveSupport.AI.Hubs
         public Task SendConnectedUsers(string room)
         {
             var users = _connections.Values
-                .Where(ur => ur.Room == room && ur.IsAdmin==false)
+                .Where(ur =>  ur.IsAdmin==false)
                 .Select(s => s.Name)
                 .ToList();
             return Clients.Group(room).SendAsync("ConnectedUsers", users);
