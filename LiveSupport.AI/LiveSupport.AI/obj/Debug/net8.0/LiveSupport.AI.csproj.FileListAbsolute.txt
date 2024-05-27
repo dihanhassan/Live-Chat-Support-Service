@@ -16,6 +16,7 @@ C:\Users\TN-99347\Desktop\Live-Chat-Support\LiveSupport.AI\LiveSupport.AI\obj\De
 C:\Users\TN-99347\Desktop\Live-Chat-Support\LiveSupport.AI\LiveSupport.AI\obj\Debug\net8.0\LiveSupport.AI.csproj.CoreCompileInputs.cache
 C:\Users\TN-99347\Desktop\Live-Chat-Support\LiveSupport.AI\LiveSupport.AI\obj\Debug\net8.0\LiveSupport.AI.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\TN-99347\Desktop\Live-Chat-Support\LiveSupport.AI\LiveSupport.AI\obj\Debug\net8.0\LiveSupport.AI.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\TN-99347\Desktop\Live-Chat-Support\LiveSupport.AI\LiveSupport.AI\obj\Debug\net8.0\LiveSupport.AI.sourcelink.json
 C:\Users\TN-99347\Desktop\Live-Chat-Support\LiveSupport.AI\LiveSupport.AI\obj\Debug\net8.0\staticwebassets.build.json
 C:\Users\TN-99347\Desktop\Live-Chat-Support\LiveSupport.AI\LiveSupport.AI\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\TN-99347\Desktop\Live-Chat-Support\LiveSupport.AI\LiveSupport.AI\obj\Debug\net8.0\staticwebassets\msbuild.LiveSupport.AI.Microsoft.AspNetCore.StaticWebAssets.props

@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { AfterViewChecked, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { ChatService } from '../../services/chat.service';
-import { Router } from '@angular/router';
+import { Router ,NavigationStart } from '@angular/router';
+import { filter } from 'rxjs/operators';
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
@@ -14,14 +15,18 @@ export class ChatComponent implements OnInit ,AfterViewChecked{
   router = inject(Router);
   loggedInUserName = sessionStorage.getItem("user");
   roomName = sessionStorage.getItem("room");
+  
   /**
    *
    */
  
 
   @ViewChild('scrollMe') private scrollContainer!: ElementRef;
- 
+  
   ngOnInit(): void {
+    
+
+
     this.chatService.messages$.subscribe((messages)=>{
       this.messages = messages;
     });
@@ -43,6 +48,7 @@ export class ChatComponent implements OnInit ,AfterViewChecked{
     });
   }
   leaveChat(){
+    console.log("Here");
     this.chatService.leaveChat().then(()=>{
       this.router.navigate(['welcome']);
     }).catch(()=>{

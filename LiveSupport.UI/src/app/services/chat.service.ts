@@ -7,7 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class ChatService {
 
-  public connection : any = new signalR.HubConnectionBuilder().withUrl("https://localhost:7112/chat")
+  public connection : any = new signalR.HubConnectionBuilder().withUrl("https://localhost:7112/chat").withAutomaticReconnect()
   .configureLogging(signalR.LogLevel.Information)
   .build();
 
@@ -18,6 +18,7 @@ export class ChatService {
   public users : string[] = [];
 
   constructor() {
+    
     this.start()
     console.log(this.connection);
     this.connection.on("ReceiveMessage", (user:string ,message:string,messageTime:string)=>{
@@ -27,10 +28,10 @@ export class ChatService {
       this.messages = [...this.messages,{user,message,messageTime}];
       this.messages$.next(this.messages);
     });
-    this.connection.on("ConnectedUser",(users:any)=>{
+    this.connection.on("ConnectedUsers",(users:any)=>{
       console.log(users);
       console.log("connected users");
-      this.connectedUsers$.next(users);
+     // this.connectedUsers$.next(users);
     });
 
    }
@@ -44,12 +45,18 @@ export class ChatService {
       console.log(error);
      
     }
+    
   }
 
+  // page reload 
+
+ 
+
+
   // join Room
-  public async joinRoom(user: string, room: string){
-    console.log(user,room); 
-    return this.connection.invoke("JoinRoom", {user,room});
+  public async joinRoom(name: string, room: string,email:string){
+    console.log(name,room); 
+    return this.connection.invoke("JoinRoom", {name,room,email});
   }
 
   // send message

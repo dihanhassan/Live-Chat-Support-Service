@@ -1,5 +1,7 @@
 using LiveSupport.AI.Hubs;
+using LiveSupport.AI.Middleware;
 using LiveSupport.AI.Models;
+using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,13 +12,19 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //use IServiceProvider for know how to initiate IDictionary 
-builder.Services.AddSingleton<IDictionary<string, UserRoomConnection>>(IServiceProvider => new Dictionary<string, UserRoomConnection>());
+builder.Services.AddSingleton<IDictionary<string, UserConnection>>(IServiceProvider => new Dictionary<string, UserConnection>());
 builder.Services.AddSignalR();
+
+
+
+
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
     {
-        builder.WithOrigins("http://localhost:4200")
+
+        builder.WithOrigins("http://localhost:4200", "http://localhost:56877")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -31,7 +39,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseMiddleware<RequestModifier>();
 app.UseHttpsRedirection();
 app.UseCors();
 app.UseAuthorization();

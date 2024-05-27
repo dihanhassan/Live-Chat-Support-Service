@@ -16,14 +16,16 @@ export class JoinRoomComponent implements OnInit{
     this.joinRoomForm = this.fb.group({
       user: ['', Validators.required],
       room: ['', Validators.required],
+      email: ['', Validators.required],
     });
   }
   joinRoom(){
-    const {user,room} = this.joinRoomForm.value;
+    const {user,room,email} = this.joinRoomForm.value;
     sessionStorage.setItem('user',user);
     sessionStorage.setItem("room", room);
+    sessionStorage.setItem("email", email);
     console.log(user,room);
-    this.chatService.joinRoom(user,room).then(()=>{
+    this.chatService.joinRoom(user,room,email).then(()=>{
       this.router.navigate(['chat']);
     }).catch((error)=>{
       console.log(error);

@@ -20,6 +20,9 @@
             <div class="mb-3">
               <input formControlName="room" type="text" class="form-control" id="roomname" placeholder="Room Name">
             </div>
+            <div class="mb-3">
+              <input formControlName="email" type="text" class="form-control" id="roomname" placeholder="email">
+            </div>
             <div class="text-center">
               <button [disabled]="joinRoomForm.invalid" (click)="joinRoom()" type="submit" class="btn btn-color px-5 mb-5 w-100">Join</button>
             </div>

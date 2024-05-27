@@ -1,51 +1,68 @@
 ﻿using LiveSupport.AI.Models;
 using Microsoft.AspNetCore.SignalR;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using LiveSupport.AI.Models;
 namespace LiveSupport.AI.Hubs
 {
     public class ChatHub : Hub
     {
-        private readonly IDictionary<string, UserRoomConnection> _connection;
-        public ChatHub(IDictionary<string, UserRoomConnection> connection)
+        private readonly IDictionary<string, UserConnection> _connections;
+
+        public ChatHub(IDictionary<string, UserConnection> connections)
         {
-            _connection = connection;
+            _connections = connections;
         }
-        public async Task JoinRoom(UserRoomConnection userConnection)
+
+        public async Task JoinRoom(UserConnection userConnection)
         {
+
+
+
             await Groups.AddToGroupAsync(Context.ConnectionId, userConnection.Room);
-            _connection.Add(Context.ConnectionId, userConnection);
-            await Clients.Group(userConnection.Room!)
-                .SendAsync("ReceiveMessage", "Bot",$"{userConnection.User} Has Join The Group",DateTime.Now);
-            SendConnectedUser(userConnection.Room);
-        }
-
-        public override Task OnDisconnectedAsync(Exception? exception)
-        {
-            if (!_connection.TryGetValue(Context.ConnectionId, out UserRoomConnection userConnection))
+            _connections[Context.ConnectionId] = userConnection;
+            if (!userConnection.IsAdmin)
             {
-                return base.OnDisconnectedAsync(exception);
+                await Clients.Group(userConnection.Room)
+                .SendAsync("ReceiveMessage", "Bot", $"{userConnection.Name} has joined the group", DateTime.Now);
             }
-            Clients.Group(userConnection.Room)
-                .SendAsync("ReceiveMessage", "Bot",$"{userConnection.User} Has Left The Group");
-           _connection.Remove(Context.ConnectionId);
-           SendConnectedUser(userConnection.Room!);
-            return base.OnDisconnectedAsync(exception);
             
+            await SendConnectedUsers(userConnection.Room);
         }
 
-        public async Task SendMessage (string message)
+        public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            if(_connection.TryGetValue(Context.ConnectionId, out UserRoomConnection userConnection))
+            if (_connections.TryGetValue(Context.ConnectionId, out var userConnection))
             {
-                await Clients.Groups(userConnection.Room).SendAsync("ReceiveMessage",userConnection.User,message, DateTime.Now);
+                await Clients.Group(userConnection.Room)
+                    .SendAsync("ReceiveMessage", "Bot", $"{userConnection.Name} has left the group");
+                _connections.Remove(Context.ConnectionId);
+                await SendConnectedUsers(userConnection.Room);
+            }
+            await base.OnDisconnectedAsync(exception);
+        }
+
+        public async Task SendMessage(string message)
+        {
+            if (_connections.TryGetValue(Context.ConnectionId, out var userConnection))
+            {
+                await Clients.Group(userConnection.Room).SendAsync("ReceiveMessage", userConnection.Name, message, DateTime.Now);
             }
         }
-        public Task SendConnectedUser(string room)
+
+        public Task SendConnectedUsers(string room)
         {
-            var users = _connection.Values
-                .Where(ur => ur.Room == room)
-                .Select(s=> s.User);
-            return Clients.Group(room).SendAsync("ConnectedUser",users);
+            var users = _connections.Values
+                .Where(ur => ur.Room == room && ur.IsAdmin==false)
+                .Select(s => s.Name)
+                .ToList();
+            return Clients.Group(room).SendAsync("ConnectedUsers", users);
         }
+
+        
+
     }
 }
- 
+
