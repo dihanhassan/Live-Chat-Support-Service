@@ -10,7 +10,7 @@ export class SideNavComponent {
   sideBarOpen = true;
 
   
-
+  isConnected : boolean = false;
   constructor(private router: Router,
     public chatService : ChatService
     ) { 

@@ -2,7 +2,7 @@ using LiveSupport.AI.Hubs;
 using LiveSupport.AI.Middleware;
 using LiveSupport.AI.Models;
 using Microsoft.AspNetCore.Diagnostics;
-
+using LiveSupport.AI.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -12,10 +12,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //use IServiceProvider for know how to initiate IDictionary 
-builder.Services.AddSingleton<IDictionary<string, UserConnection>>(IServiceProvider => new Dictionary<string, UserConnection>());
+/*builder.Services.AddSingleton<IDictionary<string, UserConnection>>(IServiceProvider => new Dictionary<string, UserConnection>());
 builder.Services.AddSingleton<IDictionary<string, string>>(IServiceProvider => new Dictionary<string, string>());
-builder.Services.AddSingleton<IDictionary<string, List<string>>>(IServiceProvider => new Dictionary<string, List<string>>());
-builder.Services.AddSignalR();
+builder.Services.AddSingleton<IDictionary<string, List<string>>>(IServiceProvider => new Dictionary<string, List<string>>());*/
+builder.Services.AddSingleton<Dependency>();
 builder.Services.AddSignalR();
 
 
@@ -27,7 +27,7 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(builder =>
     {
 
-        builder.WithOrigins("http://localhost:4200", "http://localhost:56797")
+        builder.WithOrigins("http://localhost:4200", "http://localhost:50771")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
