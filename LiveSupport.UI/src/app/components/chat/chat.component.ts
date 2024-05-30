@@ -16,6 +16,7 @@ export class ChatComponent implements OnInit ,AfterViewChecked{
   loggedInUserName = sessionStorage.getItem("user");
   roomName = sessionStorage.getItem("room");
   
+  
   /**
    *
    */
@@ -25,7 +26,7 @@ export class ChatComponent implements OnInit ,AfterViewChecked{
   
   ngOnInit(): void {
     
-
+    console.log(this.loggedInUserName);
 
     this.chatService.messages$.subscribe((messages)=>{
       this.messages = messages;

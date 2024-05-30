@@ -7,13 +7,14 @@ namespace LiveSupport.AI.Models
     {
         [Required]
         public string  Name { get; set; } = string.Empty;
-        [Required]
-        public string Room { get; set; } = string.Empty;
+ 
         [Required]
         public string Email { get; set; } = string.Empty;
 
         [Required]
         public bool IsAdmin { get; set; } = false;
+
+        public int SiteId { get; set; } = 0;
 
         
     }

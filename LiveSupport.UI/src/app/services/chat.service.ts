@@ -54,14 +54,24 @@ export class ChatService {
 
 
   // join Room
-  public async joinRoom(name: string, room: string,email:string){
-    console.log(name,room); 
-    return this.connection.invoke("JoinRoom", {name,room,email});
+  public async joinRoom(name: string, email:string,siteID:Number){
+    console.log(name); 
+    
+    return this.connection.invoke("JoinRoom", { name: name, email: email, siteID: siteID })
+    .then((roomID: string) => {
+        console.log(roomID);
+        sessionStorage.setItem("roomID", roomID);
+    })
+    .catch((error: any) => {
+        console.error("Error joining room:", error);
+    });
+
   }
 
   // send message
   public async sendMessage(message:string){
-    return this.connection.invoke("SendMessage",message);
+    const roomID = sessionStorage.getItem("roomID");
+    return this.connection.invoke("SendMessage",{message,roomID});
   }
 
   // leave room
