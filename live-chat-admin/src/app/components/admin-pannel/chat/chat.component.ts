@@ -1,7 +1,7 @@
 import { Component, AfterViewChecked, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ChatService } from '../../../services/chat.service';
-import { Message } from '../../../Models/message';  // Adjust the import path according to your project structure
+import { Message } from '../../../models/message';  // Adjust the import path according to your project structure
 
 @Component({
   selector: 'app-chat',

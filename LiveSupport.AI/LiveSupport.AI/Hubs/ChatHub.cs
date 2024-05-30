@@ -21,39 +21,46 @@ namespace LiveSupport.AI.Hubs
 
         public async Task<string> JoinRoom(UserConnection userConnection)
         {
-            string roomID = null;
-
-            if (userConnection.IsAdmin)
+            try
             {
-                if (!_dependency._adminConnection.ContainsKey(userConnection.Email))
+                string roomID = null;
+
+                if (userConnection.IsAdmin)
                 {
-                    _dependency._adminConnection[userConnection.Email] = new List<string>();
+                    if (!_dependency._adminConnection.ContainsKey(userConnection.Email))
+                    {
+                        _dependency._adminConnection[userConnection.Email] = new List<string>();
+                    }
+                    foreach (var room in _dependency._adminConnection[userConnection.Email])
+                    {
+                        await Groups.AddToGroupAsync(Context.ConnectionId, room);
+                    }
+                    _dependency._connections[Context.ConnectionId] = userConnection;
+                    await SendConnectedUsers(userConnection.Email);
                 }
-                foreach (var room in _dependency._adminConnection[userConnection.Email])
+                else
                 {
-                    await Groups.AddToGroupAsync(Context.ConnectionId, room);
+                    _dependency._connections[Context.ConnectionId] = userConnection;
+                    roomID = await GetOrCreateRoomId(userConnection);
+                    await Groups.AddToGroupAsync(Context.ConnectionId, roomID);
+
+                    await NotifyAdminsOfNewUser(userConnection, roomID);
+                    var message = new Message();
+                    message.User = "Bot";
+                    message.Email = userConnection.Email;
+                    message.Text = $"{userConnection.Name} has joined the group";
+                    message.Time = DateTime.Now;
+
+                    await Clients.Group(roomID).SendAsync("ReceiveMessage", message);
+                    await SendConnectedUsers(userConnection.Email);
                 }
-                _dependency._connections[Context.ConnectionId] = userConnection;
-                await SendConnectedUsers(userConnection.Email);
-            }
-            else
+
+                return roomID;
+            }catch(Exception ex)
             {
-                _dependency._connections[Context.ConnectionId] = userConnection;
-                roomID = await GetOrCreateRoomId(userConnection);
-                await Groups.AddToGroupAsync(Context.ConnectionId, roomID);
-                
-                await NotifyAdminsOfNewUser(userConnection, roomID);
-                var message = new Message();
-                message.User = "Bot";
-                message.Email = userConnection.Email;
-                message.Text = $"{userConnection.Name} has joined the group";
-                message.Time = DateTime.Now;
-
-                await Clients.Group(roomID).SendAsync("ReceiveMessage", message);
-                await SendConnectedUsers(userConnection.Email);
+                Console.WriteLine(ex.Message);
+                return null;
             }
-
-            return roomID;
         }
 
         private async Task<string> GetOrCreateRoomId(UserConnection userConnection)
@@ -74,7 +81,7 @@ namespace LiveSupport.AI.Hubs
                                 _dependency._adminConnection[admin] = new List<string>();
                             }
                             _dependency._adminConnection[admin].Add(roomID);
-                            var adminContextId = _dependency._connections.FirstOrDefault(x => admin == x.Value.Email && x.Value.IsAdmin == true).Key??"";
+                            var adminContextId = _dependency._connections.FirstOrDefault(x => admin == x.Value.Email && x.Value.IsAdmin == true).Key??""; // when admin context is is not found send empty string
                             await Groups.AddToGroupAsync(adminContextId, roomID);
                             await SendConnectedUsers(admin);
                         }
@@ -91,70 +98,94 @@ namespace LiveSupport.AI.Hubs
 
         private async Task NotifyAdminsOfNewUser(UserConnection userConnection, string roomID)
         {
-            var admins = _dependency._adminConnection.Where(kvp => kvp.Value.Contains(roomID)).Select(kvp => kvp.Key).ToList();
-            foreach (var admin in admins)
+            try
             {
-                await SendConnectedUsers(admin);
+                var admins = _dependency._adminConnection.Where(kvp => kvp.Value.Contains(roomID)).Select(kvp => kvp.Key).ToList();
+                foreach (var admin in admins)
+                {
+                    await SendConnectedUsers(admin);
+                }
+            }catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            if (_dependency._connections.TryGetValue(Context.ConnectionId, out var userConnection))
+            try
             {
-                if (_dependency._userRoom.TryGetValue(userConnection.Email, out var roomId))
+                if (_dependency._connections.TryGetValue(Context.ConnectionId, out var userConnection))
                 {
-                    foreach (var admin in _dependency._adminConnection.Keys.ToList())
+                    if (_dependency._userRoom.TryGetValue(userConnection.Email, out var roomId))
                     {
-                        var adminRooms = _dependency._adminConnection[admin];
-                        if (adminRooms.Contains(roomId))
+                        foreach (var admin in _dependency._adminConnection.Keys.ToList())
                         {
-                            adminRooms.Remove(roomId);
-                            await SendConnectedUsers(admin);
+                            var adminRooms = _dependency._adminConnection[admin];
+                            if (adminRooms.Contains(roomId))
+                            {
+                                adminRooms.Remove(roomId);
+                                await SendConnectedUsers(admin);
+                            }
                         }
+                        _dependency._userRoom.TryRemove(userConnection.Email, out _);
                     }
-                    _dependency._userRoom.TryRemove(userConnection.Email, out _);
+                    _dependency._connections.TryRemove(Context.ConnectionId, out _);
                 }
-                _dependency._connections.TryRemove(Context.ConnectionId,out _);
+                await base.OnDisconnectedAsync(exception);
+            }catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
-            await base.OnDisconnectedAsync(exception);
         }
 
         public async Task SendMessageByAdmin (PrivateMessage messages, UserConnection userConnection)
         {
-            if(messages.Message is not null)
+            try
             {
-                var message = new Message();
-                message.User = "admin";
-                message.Email = userConnection.Email;
-                message.Text = messages.Message;
-                message.Time = DateTime.Now;
-                message.Room = messages.RoomID;
-                await Clients.Group(messages.RoomID).SendAsync("ReceiveMessage", message);
+                if (messages.Message is not null)
+                {
+                    var message = new Message();
+                    message.User = "admin";
+                    message.Email = userConnection.Email;
+                    message.Text = messages.Message;
+                    message.Time = DateTime.Now;
+                    message.Room = messages.RoomID;
+                    await Clients.Group(messages.RoomID).SendAsync("ReceiveMessage", message);
+                }
+            }catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
 
         public async Task SendMessage(PrivateMessage privateMessage )
         {
-            if (_dependency._connections.TryGetValue(Context.ConnectionId, out var userConnection))
+            try
             {
-                if (userConnection.IsAdmin)
+                if (_dependency._connections.TryGetValue(Context.ConnectionId, out var userConnection))
                 {
-                    await SendMessageByAdmin(privateMessage, userConnection);
-                }
-                else
-                {
-                    if (_dependency._userRoom.TryGetValue(userConnection.Email, out var roomID))
+                    if (userConnection.IsAdmin)
                     {
-                        var message = new Message();
-                        message.User =userConnection.Name;
-                        message.Email = userConnection.Email;
-                        message.Text = privateMessage.Message;
-                        message.Time = DateTime.Now;
-                        message.Room = privateMessage.RoomID;
-                        await Clients.Group(privateMessage.RoomID).SendAsync("ReceiveMessage", message);
+                        await SendMessageByAdmin(privateMessage, userConnection);
+                    }
+                    else
+                    {
+                        if (_dependency._userRoom.TryGetValue(userConnection.Email, out var roomID))
+                        {
+                            var message = new Message();
+                            message.User = userConnection.Name;
+                            message.Email = userConnection.Email;
+                            message.Text = privateMessage.Message;
+                            message.Time = DateTime.Now;
+                            message.Room = privateMessage.RoomID;
+                            await Clients.Group(privateMessage.RoomID).SendAsync("ReceiveMessage", message);
+                        }
                     }
                 }
+            }catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
 

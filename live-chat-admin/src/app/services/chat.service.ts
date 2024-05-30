@@ -1,25 +1,27 @@
 import { Injectable, OnInit } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { BehaviorSubject } from 'rxjs';
-import { Message } from '../Models/message';
+import { Message } from '../models/message';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatService implements OnInit {
-
+  
   public connection: any;
   public messages$ = new BehaviorSubject<Message[]>([]);
   public connectedUsers$ = new BehaviorSubject<any>([]);
-  public messages: any[] = [];
+  public messages: Message[] = [];
   public users: string[] = [];
 
   constructor() {
     this.initializeConnection();
   }
+
   ngOnInit(): void {
     this.initializeConnection();
   }
+
   // Initialize SignalR connection
   private initializeConnection() {
     this.connection = new signalR.HubConnectionBuilder()
@@ -27,32 +29,32 @@ export class ChatService implements OnInit {
       .configureLogging(signalR.LogLevel.Information)
       .build();
 
-    
-      this.start();
+    this.start();
+
     this.connection.on("ConnectedUsers", (allUsers: { item1: string, item2: string }[]) => {
       console.log(allUsers);
       this.connectedUsers$.next(allUsers);
-    
+
       // Extracting names and IDs from each object
       const names = allUsers.map(user => user.item1);
       const ids = allUsers.map(user => user.item2);
-    
+
       console.log(names);
       console.log(ids);
     });
-    this.messageUpdate();
 
-    // Start the connection
-    
+    this.messageUpdate();
   }
 
-  public  messageUpdate(){
+  public messageUpdate() {
     this.connection.on("ReceiveMessage", (message: Message) => {
-    
       console.log(message);
-      this.messages = [...this.messages,message];
+
+      this.messages = [...this.messages, message];
+
+      sessionStorage.setItem("storeMessage", JSON.stringify(this.messages));
       this.messages$.next(this.messages);
-      console.log(this.messages)
+      console.log(this.messages);
     });
   }
 
@@ -63,15 +65,12 @@ export class ChatService implements OnInit {
       console.log("connected");
 
       // After connection is established, join the room if needed
-      // For demonstration purposes, assuming room details are stored in variables
-      const name = "admin";
-  
-      const email = "admin@gmail.com";
+      const name = sessionStorage.getItem('user') ?? 'admin';
+      const email = sessionStorage.getItem('email') ?? 'admin@gmail.com';
       const isAdmin = true;
-      sessionStorage.setItem('user',name);
-     
-      sessionStorage.setItem("email", email);
-      await this.joinRoom(name,  email, isAdmin);
+      sessionStorage.setItem('user', "admin");
+
+      await this.joinRoom(name, email, isAdmin);
     } catch (error) {
       console.log(error);
     }
@@ -84,6 +83,13 @@ export class ChatService implements OnInit {
 
     try {
       await this.connection.invoke("JoinRoom", { name, email, isAdmin });
+
+      const storedMessages = sessionStorage.getItem("storeMessage");
+      if (storedMessages) {
+        this.messages = JSON.parse(storedMessages);
+        this.messages$.next(this.messages);
+        console.log(this.messages);
+      }
       console.log('joined room');
     } catch (error) {
       console.log(error);
@@ -92,10 +98,10 @@ export class ChatService implements OnInit {
 
   // Send message
   public async sendMessage(message: string, roomID: string) {
-    console.log(message,roomID);
+    console.log(message, roomID);
 
     try {
-      await this.connection.invoke("SendMessage", {message,roomID});
+      await this.connection.invoke("SendMessage", { message, roomID });
     } catch (error) {
       console.log(error);
     }
@@ -110,5 +116,4 @@ export class ChatService implements OnInit {
       console.log(error);
     }
   }
-
 }

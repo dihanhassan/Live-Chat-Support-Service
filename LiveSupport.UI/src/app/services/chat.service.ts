@@ -1,59 +1,74 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { BehaviorSubject } from 'rxjs';
+import { Message } from '../models/message';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ChatService {
+export class ChatService implements OnInit {
 
-  public connection : any = new signalR.HubConnectionBuilder().withUrl("https://localhost:7112/chat").withAutomaticReconnect()
-  .configureLogging(signalR.LogLevel.Information)
-  .build();
-
-  public messages$ = new BehaviorSubject<any>([]);
-  public connectedUsers$ = new BehaviorSubject<string[]>([]);
+  public connection: any;
+  public messages$ = new BehaviorSubject<Message[]>([]);
+  public connectedUsers$ = new BehaviorSubject<any>([]);
   public messages: any[] = [];
-
-  public users : string[] = [];
+  public users: string[] = [];
 
   constructor() {
+    this.initializeConnection();
+  }
+  ngOnInit(): void {
+    this.initializeConnection();
+  }
+  // Initialize SignalR connection
+  private initializeConnection() {
+    this.connection = new signalR.HubConnectionBuilder()
+      .withUrl("https://localhost:7112/chat")
+      .configureLogging(signalR.LogLevel.Information)
+      .build();
+
     
-    this.start()
-    console.log(this.connection);
-    this.connection.on("ReceiveMessage", (user:string ,message:string,messageTime:string)=>{
-      console.log(user);
-      console.log(message);
-      console.log(messageTime);
-      this.messages = [...this.messages,{user,message,messageTime}];
-      this.messages$.next(this.messages);
+      this.start();
+    this.connection.on("ConnectedUsers", (allUsers: { item1: string, item2: string }[]) => {
+      console.log(allUsers);
+      this.connectedUsers$.next(allUsers);
+    
+      // Extracting names and IDs from each object
+      const names = allUsers.map(user => user.item1);
+      const ids = allUsers.map(user => user.item2);
+    
+      console.log(names);
+      console.log(ids);
     });
-    this.connection.on("ConnectedUsers",(users:any)=>{
-      console.log(users);
-      console.log("connected users");
-     // this.connectedUsers$.next(users);
-    });
+    this.messageUpdate();
 
-   }
-
-  // start connection
-  public async start (){
-    try {
-      await this.connection.start();
-      console.log("connected");
-    } catch (error) {
-      console.log(error);
-     
-    }
+    // Start the connection
     
   }
 
-  // page reload 
+  public  messageUpdate(){
+    this.connection.on("ReceiveMessage", (message: Message) => {
+    
+      console.log(message);
+      this.messages = [...this.messages,message];
+      this.messages$.next(this.messages);
+      console.log(this.messages)
+    });
+  }
 
- 
+  // Start connection
+  public async start() {
+    try {
+      await this.connection.start();
+      console.log("connected");
 
+     
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-  // join Room
+  // Join Room
   public async joinRoom(name: string, email:string,siteID:Number){
     console.log(name); 
     
@@ -68,16 +83,20 @@ export class ChatService {
 
   }
 
-  // send message
+  // Send message
   public async sendMessage(message:string){
     const roomID = sessionStorage.getItem("roomID");
     return this.connection.invoke("SendMessage",{message,roomID});
   }
 
-  // leave room
-
-  public async leaveChat(){
-    return this.connection.stop();
+  // Leave room
+  public async leaveChat() {
+    try {
+      await this.connection.stop();
+      console.log('left chat');
+    } catch (error) {
+      console.log(error);
+    }
   }
 
 }
