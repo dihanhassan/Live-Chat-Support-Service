@@ -5,20 +5,20 @@
         <div #scrollMe class="msg_history">
           <ng-container *ngFor="let message of messages">
             <div [ngClass]="{
-              'incoming_msg': message.user != loggedInUserName && message.user !== 'Bot',
-              'outgoing_msg': message.user === loggedInUserName,
+              'incoming_msg': message.email != loggedInUserName && message.user !== 'Bot',
+              'outgoing_msg': message.email === loggedInUserName,
               'bot_msg': message.user === 'Bot'
             }">
               <!-- <div *ngIf="message.user != loggedInUserName && message.user !== 'Bot'" class="incoming_msg_img">
                 <img src="https://ptetutorials.com/images/user-profile.png">
               </div> -->
-              <div *ngIf="message.user != loggedInUserName && message.user !== 'Bot'" class="received_msg">
+              <div *ngIf="message.email != loggedInUserName && message.user !== 'Bot'" class="received_msg">
                 <div class="received_withd_msg">
                   <p>{{ message.text }}</p>
                   <span class="time_date">{{ message.user }} | {{ message.time | date: 'medium' }}</span>
                 </div>
               </div>
-              <div *ngIf="message.user === loggedInUserName" class="sent_msg">
+              <div *ngIf="message.email === loggedInUserName" class="sent_msg">
                 <p>{{ message.text }}</p>
                 <span class="time_date">{{ message.user }} | {{ message.time | date: 'medium' }}</span>
               </div>

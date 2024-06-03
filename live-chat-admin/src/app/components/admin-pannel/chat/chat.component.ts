@@ -24,6 +24,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   connected: boolean = false;
 
   ngOnInit(): void {
+
+    console.log(this.messages)
+    console.log(this.loggedInUserName);
+    
     console.log(this.loggedInUserName);
     this.actRoute.queryParams.subscribe(params => {
       const user = {
@@ -33,6 +37,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       };
       this.roomID = user.item2;
       this.userEmail = user.item3;
+    
+      // this.chatService.removeAdmin(this.loggedInUserName??" ",this.roomID,1);
+
       console.log(this.userEmail);
       console.log(this.roomID);
       
@@ -50,6 +57,8 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       console.log(res);
     });
   }
+
+  
 
   ngAfterViewChecked(): void {
     this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;

@@ -16,7 +16,7 @@ namespace LiveSupport.AI.Models
 
         public int SiteId { get; set; } = 0;
         
-        public string ConnectionId { get; set; } = string.Empty;
+       
 
         
     }

@@ -189,6 +189,56 @@ namespace LiveSupport.AI.Hubs
             }
         }
 
+
+        public async Task RemoveOtherAdminFromRoom(RemoveOtherAdmins otherAdmins)
+        {
+            try
+            {
+                   /* for (int i = 0; i < SD._siteAdmin[otherAdmins.SiteId].Count; ++i)
+                    {
+                        var mail = SD._siteAdmin[otherAdmins.SiteId][i];
+                        if (mail != otherAdmins.AdminMail)
+                        {
+                            for (int j = 0; j < _dependency._adminConnection[mail].Count; ++j)
+                            {
+                                if (_dependency._adminConnection[mail][j] == otherAdmins.RoomID)
+                                {
+                                    // Groups.Remove(Context.ConnectionId, roomName);
+                                    _dependency._adminConnection[mail].RemoveAt(j);
+                                    await SendConnectedUsers(mail);
+                                }
+                            }
+                        }
+                    }*/
+
+               
+
+                if(SD._siteAdmin.TryGetValue(otherAdmins.SiteId,out var admins))
+                {
+                    foreach(var admin in admins)
+                    {
+                        if( admin !=otherAdmins.AdminMail && _dependency._adminConnection.ContainsKey(admin))
+                        {
+                            if (_dependency._adminConnection[admin].Contains(otherAdmins.RoomID))
+                            {
+                                _dependency._adminConnection[admin].Remove(otherAdmins.RoomID);
+                                await SendConnectedUsers(admin);
+                            }
+                        }
+                    }
+                }
+
+
+
+
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+
         public async Task SendConnectedUsers(string admin)
         {
             try
@@ -202,7 +252,7 @@ namespace LiveSupport.AI.Hubs
                 {
                     var connectedUsersEmail = new List<string>();
                     var connectedUsers = new List<Tuple<string, string, string>>();
-                    foreach (var roomID in roomIDs)
+                   /* foreach (var roomID in roomIDs)
                     {
                         for (int i = 0; i < _dependency._userRoom.Count; i++)
                         {
@@ -212,7 +262,23 @@ namespace LiveSupport.AI.Hubs
                                 connectedUsersEmail.Add(_dependency._userRoom.ElementAt(i).Key);
                             }
                         }
-                    }
+                    }*/
+
+
+                    roomIDs.ForEach(roomId =>
+
+                    {
+                        _dependency._userRoom.ToList().ForEach(x =>
+                        {
+                            if (x.Value == roomId)
+                            {
+                                connectedUsersEmail.Add(x.Key);
+                            }
+                        });
+                    });
+
+
+
                     foreach (var userEmail in connectedUsersEmail)
                     {
                         //  var userConnection = _connections.Values.FirstOrDefault(x => userEmail == x.Email && x.IsAdmin ==false ).Name;

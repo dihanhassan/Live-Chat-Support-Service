@@ -2,6 +2,7 @@ import { Injectable, OnInit } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { BehaviorSubject } from 'rxjs';
 import { Message } from '../models/message';
+import { RemoveOtherAdmins } from '../models/removeOtherAdmins';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,13 @@ export class ChatService implements OnInit {
   public connectedUsers$ = new BehaviorSubject<any>([]);
   public messages: Message[] = [];
   public users: string[] = [];
+
+  removeOtherAdmins: RemoveOtherAdmins ={
+    adminMail:'',
+    roomID:'',
+    siteID:0
+  
+  };
 
   constructor() {
     this.initializeConnection();
@@ -65,13 +73,27 @@ export class ChatService implements OnInit {
       console.log("connected");
 
       // After connection is established, join the room if needed
-      const name = sessionStorage.getItem('user') ?? 'admin';
-      const email = sessionStorage.getItem('email') ?? 'admin@gmail.com';
+      const name =  'admin';
+      const email =  'admin@gmail.com';
       const isAdmin = true;
       sessionStorage.setItem('user', "admin");
-
+      sessionStorage.setItem('mail', email);
+      
       await this.joinRoom(name, email, isAdmin);
     } catch (error) {
+      console.log(error);
+    }
+  }
+  //Remove Otehr Admin crosponging user
+  
+  public async removeOtherAdmin(adminMail:string,roomID:string,siteID :number){
+    try{
+      this.removeOtherAdmins.adminMail = adminMail;
+      this.removeOtherAdmins.roomID = roomID;
+      this.removeOtherAdmins.siteID = siteID;
+      console.log(this.removeOtherAdmins);
+      await this.connection.invoke("RemoveOtherAdminFromRoom",this.removeOtherAdmins);
+    }catch(error){
       console.log(error);
     }
   }
@@ -83,7 +105,7 @@ export class ChatService implements OnInit {
 
     try {
       await this.connection.invoke("JoinRoom", { name, email, isAdmin });
-
+      sessionStorage.setItem("user","admin@gmail.com");
       const storedMessages = sessionStorage.getItem("storeMessage");
       if (storedMessages) {
         this.messages = JSON.parse(storedMessages);

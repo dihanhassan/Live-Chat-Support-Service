@@ -29,7 +29,17 @@ export class SideNavComponent {
       id: user.item2,
       email: user.item3
     };
-    this.router.navigate(['admin-pannel/chat'], { queryParams });
+    console.log("here")
+    const adminMail = sessionStorage.getItem("user");
+    if(adminMail){
+      console.log("admin mail")
+      
+      this.chatService.removeOtherAdmin(adminMail,user.item2,1);
+      this.router.navigate(['admin-pannel/chat'], { queryParams });
+    }else{
+      console.log('admin mail not found');
+    }
+    
   }
   toggleSidebar() {
     this.sideBarOpen = !this.sideBarOpen;
